@@ -92,3 +92,50 @@ begin
     counter:=counter+1;
   END LOOP;
 end;
+/
+
+
+--<show customer and order date>---
+CREATE OR REPLACE PROCEDURE custommer(
+  var1 IN varchar,
+  var2 OUT VARCHAR2
+)
+AS
+
+BEGIN
+  
+  SELECT cust_name INTO var2 FROM customer WHERE cust_id IN (SELECT cust_id FROM order_detail WHERE order_date = var1);
+
+  DBMS_OUTPUT.PUT_LINE('customer name :' || var2 || ' order_date : ' || var1 );
+END;
+/
+
+
+declare 
+order_date order_detail.order_date%type:='20-5-2023';
+cust_name customer.cust_name%type;
+
+begin
+custommer(order_date,cust_name);
+end;
+/
+
+---<function to show amount in order date>--
+
+set serveroutput on
+create or replace function amountt(var1 in varchar) return number AS
+value order_detail.amount%type;
+begin
+  select amount into value from ORDER_DETAIL where order_date=var1; 
+   return value;
+end;
+/
+set serveroutput on
+declare 
+value varchar(20);
+begin
+value:=amountt('20-5-2023');
+DBMS_OUTPUT.PUT_LINE('amount:' || value || ' order_date : ' || '20-5-2023');
+end;
+/
+
